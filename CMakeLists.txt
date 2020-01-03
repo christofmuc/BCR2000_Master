@@ -33,7 +33,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/third_party/juce-cmake/
 
 add_subdirectory(juce-utils)
 add_subdirectory(juce-widgets)
-add_subdirectory(midikraft-base)
+add_subdirectory(MidiKraft-base)
+add_subdirectory(MidiKraft-BCR2000)
 
 add_subdirectory(BCRMaster)
 

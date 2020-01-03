@@ -3,8 +3,11 @@
 #include "StreamLogger.h"
 #include "MidiController.h"
 
-#include <memory>
+#include "Sysex.h"
+#include "BCR2000.h"
 
+#include <memory>
+#include <sstream>
 
 BCLEditor::BCLEditor() : buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false)
 {
@@ -109,7 +112,20 @@ void BCLEditor::loadDocument()
 			return;
 		}
 		currentFilePath_ = bclFile.getFullPathName();
-		auto fileText = bclFile.loadFileAsString();
+		String fileText;
+		if (bclFile.getFileExtension() == ".syx") {
+			auto messages = Sysex::loadSysex(bclFile.getFullPathName().toStdString());
+			std::stringstream result;
+			for (const auto& message : messages) {
+				if (midikraft::BCR2000::isSysexFromBCR2000(message)) {
+					result << midikraft::BCR2000::convertSyxToText(message) << std::endl;
+				}
+			}
+			fileText = result.str();
+		}
+		else {
+			fileText = bclFile.loadFileAsString();
+		}
 		editor_->loadContent(fileText);
 	}
 }

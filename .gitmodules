@@ -13,3 +13,6 @@
 [submodule "MidiKraft-base"]
 	path = MidiKraft-base
 	url = https://github.com/christofmuc/MidiKraft-base.git
+[submodule "MidiKraft-BCR2000"]
+	path = MidiKraft-BCR2000
+	url = https://github.com/christofmuc/MidiKraft-BCR2000.git
