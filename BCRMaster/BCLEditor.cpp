@@ -97,19 +97,19 @@ void BCLEditor::loadDocument(std::string const &document)
 
 void BCLEditor::loadDocument()
 {
-	File defaultExampleLocation = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("PyTschirperExamples");
-	FileChooser chooser("Please select the python file to load...",
+	File defaultExampleLocation = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("BCR2000_Presets");
+	FileChooser chooser("Please select the BCR2000 preset file to load...",
 		defaultExampleLocation,
-		"*.py");
+		"*.syx;*.bcr;*.bcl");
 
 	if (chooser.browseForFileToOpen())
 	{
-		File pythonFile(chooser.getResult());
-		if (!pythonFile.existsAsFile()) {
+		File bclFile(chooser.getResult());
+		if (!bclFile.existsAsFile()) {
 			return;
 		}
-		currentFilePath_ = pythonFile.getFullPathName();
-		auto fileText = pythonFile.loadFileAsString();
+		currentFilePath_ = bclFile.getFullPathName();
+		auto fileText = bclFile.loadFileAsString();
 		editor_->loadContent(fileText);
 	}
 }
@@ -117,11 +117,11 @@ void BCLEditor::loadDocument()
 void BCLEditor::saveDocument()
 {
 	if (currentFilePath_.isNotEmpty()) {
-		File pythonFile(currentFilePath_);
-		if (pythonFile.existsAsFile() && pythonFile.hasWriteAccess()) {
-			pythonFile.deleteFile();
+		File bclFile(currentFilePath_);
+		if (bclFile.existsAsFile() && bclFile.hasWriteAccess()) {
+			bclFile.deleteFile();
 		}
-		FileOutputStream out(pythonFile);
+		FileOutputStream out(bclFile);
 		if (out.openedOk()) {
 			out.writeText(document_.getAllContent(), false, false, nullptr);
 		}
@@ -135,7 +135,7 @@ void BCLEditor::saveAsDocument()
 {
 	FileChooser chooser("Save as...",
 		File::getSpecialLocation(File::userHomeDirectory),
-		"*.py");
+		"*.bcl");
 
 	if (chooser.browseForFileToSave(true))
 	{
@@ -147,14 +147,13 @@ void BCLEditor::saveAsDocument()
 
 void BCLEditor::aboutBox()
 {
-	String message = "This software is copyright 2019-2020 by Christof Ruch\n"
+	String message = "This software is copyright 2020 by Christof Ruch\n"
 		"Released under dual license, by default under AGPL-3.0, but an MIT licensed version is available on request by the author\n"
 		"\n"
 		"This software is provided 'as-is,' without any express or implied warranty.In no event shall the author be held liable for any damages arising from the use of this software.\n"
 		"\n"
 		"Other licenses:\n"
 		"This software is build using JUCE, who might want to track your IP address. See https://github.com/WeAreROLI/JUCE/blob/develop/LICENSE.md for details.\n"
-		"We also use pybind11, which is Copyright (c) 2016 Wenzel Jakob <wenzel.jakob@epfl.ch>, All rights reserved. See https://github.com/pybind/pybind11.\n"
 		"The boost library is used for parts of this software, see https://www.boost.org/.\n"
 		"The installer provided also contains the Microsoft Visual Studio 2017 Redistributable Package.\n"
 		;
