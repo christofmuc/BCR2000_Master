@@ -8,6 +8,9 @@
 
 #include "JuceHeader.h"
 
+#include "BCR2000.h"
+#include "AutoDetection.h"
+
 #include "LambdaButtonStrip.h"
 #include "MidiLogView.h"
 
@@ -17,7 +20,7 @@ class BCLEditor : public Component,
 	private Timer
 {
 public:
-	BCLEditor();
+	BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr);
 	virtual ~BCLEditor();
 
 	virtual void resized() override;
@@ -43,6 +46,8 @@ private:
 
 	void aboutBox();
 
+	std::shared_ptr<midikraft::BCR2000> bcr_;
+	midikraft::AutoDetection autodetector_;
 	std::unique_ptr<CodeEditorComponent> editor_;
 	CodeDocument document_;
 	LambdaButtonStrip buttons_;

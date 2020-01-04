@@ -6,28 +6,35 @@
 #include "Sysex.h"
 #include "BCR2000.h"
 
+#include "AutoDetection.h"
+
 #include <memory>
 #include <sstream>
 
-BCLEditor::BCLEditor() : buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false)
+BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr) : bcr_(bcr), buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false)
 {
 	editor_ = std::make_unique<CodeEditorComponent>(document_, nullptr);
 	addAndMakeVisible(editor_.get());
 	LambdaButtonStrip::TButtonMap buttons = {
-		{ "load", { 0, "Open (CTRL-O)", [this]() {
+		{ "connect", {0, "Connect to BCR2000", [this]() {
+			std::vector<std::shared_ptr<midikraft::SimpleDiscoverableDevice>> devices;
+			devices.push_back(bcr_);
+			autodetector_.autoconfigure(devices);
+		}}},
+		{ "load", { 1, "Open (CTRL-O)", [this]() {
 			loadDocument();
 			editor_->grabKeyboardFocus();
 		}, 0x4F /* O */, ModifierKeys::ctrlModifier}},
-		{ "save", { 1, "Save (CTRL-S)", [this]() {
+		{ "save", { 2, "Save (CTRL-S)", [this]() {
 			saveDocument();
 		}, 0x53 /* S */, ModifierKeys::ctrlModifier}},
-		{ "saveAs", { 2, "Save as (CTRL-A)", [this]() {
+		{ "saveAs", { 3, "Save as (CTRL-A)", [this]() {
 			saveAsDocument();
 		}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
-		{ "about", { 3, "About", [this]() {
+		{ "about", { 4, "About", [this]() {
 			aboutBox();
 		}, -1, 0}},
-		{ "close", { 4, "Close (CTRL-W)", []() {
+		{ "close", { 5, "Close (CTRL-W)", []() {
 			JUCEApplicationBase::quit();
 		}, 0x57 /* W */, ModifierKeys::ctrlModifier}}
 	};
