@@ -11,6 +11,7 @@
 #include "BCLEditor.h"
 #include "BCR2000.h"
 #include "LogView.h"
+#include "MidiLogView.h"
 
 class LogViewLogger;
 
@@ -26,6 +27,7 @@ private:
 	std::shared_ptr<midikraft::BCR2000> bcr_;
 	BCLEditor editor_;
 	LogView logView_;
+	MidiLogView midiLogView_;
 	std::unique_ptr<LogViewLogger> logger_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

@@ -12,7 +12,6 @@
 #include "AutoDetection.h"
 
 #include "LambdaButtonStrip.h"
-#include "MidiLogView.h"
 
 class BCLEditor : public Component,
 	public ApplicationCommandTarget,
@@ -51,11 +50,10 @@ private:
 	std::unique_ptr<CodeEditorComponent> editor_;
 	CodeDocument document_;
 	LambdaButtonStrip buttons_;
-	TextEditor currentError_, currentStdout_;
+	TextEditor currentError_;
 	StringArray errors_;
 	TextEditor helpText_;
-	Label stdErrLabel_, stdOutLabel_;
-	MidiLogView logView_;
+	Label stdErrLabel_;
 
 	ApplicationCommandManager commandManager_;
 	String currentFilePath_;

@@ -43,23 +43,16 @@ BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr) : bcr_(bcr), butto
 	addAndMakeVisible(helpText_);
 	addAndMakeVisible(stdErrLabel_);
 	addAndMakeVisible(currentError_);
-	addAndMakeVisible(stdOutLabel_);
-	addAndMakeVisible(currentStdout_);
 	stdErrLabel_.setText("stderr:", dontSendNotification);
 	currentError_.setReadOnly(true);
 	currentError_.setMultiLine(true, false);
-	stdOutLabel_.setText("stdout:", dontSendNotification);
-	currentStdout_.setReadOnly(true);
-	currentStdout_.setMultiLine(true, false);
 	document_.addListener(this);
 
 	helpText_.setReadOnly(true);
 	helpText_.setMultiLine(true, false);
 	helpText_.setText("Welcome to the PyTschirp demo program. Below is a python script editor which already imported pytschirp.\n"
 		"\n"
-		"Type some commands like 'r = Rev2()' and press CTRL-ENTER to execute the script");
-
-	addAndMakeVisible(logView_);
+		"Type some commands like 'r = Rev2()' and press CTRL-ENTER to execute the script");	
 
 	// Setup hot keys
 	commandManager_.registerAllCommandsForTarget(&buttons_);
@@ -79,25 +72,14 @@ void BCLEditor::resized()
 {
 	Rectangle<int> area(getLocalBounds());
 
-	auto left = area.removeFromLeft(area.getWidth() / 2);
-	auto right = area;
+	buttons_.setBounds(area.removeFromTop(60).reduced(20));
+	helpText_.setBounds(area.removeFromTop(60).withTrimmedLeft(20).withTrimmedRight(20));
 
-	logView_.setBounds(right.removeFromBottom(area.getHeight() * 1 / 3));
-
-	buttons_.setBounds(left.removeFromTop(60).reduced(20));
-	helpText_.setBounds(left.removeFromTop(60).withTrimmedLeft(20).withTrimmedRight(20));
-
-	auto outputArea = right;
-
-	auto stdErr = outputArea.removeFromBottom(outputArea.getHeight() / 2);
+	auto stdErr = area.removeFromBottom(200);
 	stdErrLabel_.setBounds(stdErr.removeFromTop(20));
 	currentError_.setBounds(stdErr);
 
-	auto stdOut = outputArea;
-	stdOutLabel_.setBounds(stdOut.removeFromTop(20));
-	currentStdout_.setBounds(stdOut);
-
-	editor_->setBounds(left.reduced(20));
+	editor_->setBounds(area.reduced(20));
 }
 
 void BCLEditor::loadDocument(std::string const &document)
