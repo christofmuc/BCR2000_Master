@@ -27,12 +27,15 @@ public:
 	void refreshListOfPresets();
 
 private:
+	void retrievePatch(int no);
+
 	std::shared_ptr<midikraft::BCR2000> bcr_;
 	BCLEditor editor_;
 	LogView logView_;
 	PatchButtonGrid grid_;
 	MidiLogView midiLogView_;
 	std::unique_ptr<LogViewLogger> logger_;
+	std::vector<MidiMessage> currentDownload_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

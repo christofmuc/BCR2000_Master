@@ -25,6 +25,7 @@ public:
 	virtual void resized() override;
 	
 	void loadDocument(std::string const &document);
+	void loadDocumentFromSyx(std::vector<MidiMessage> const &messages);
 
 	// Code document listener
 	virtual void codeDocumentTextInserted(const String& newText, int insertIndex) override;

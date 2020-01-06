@@ -110,22 +110,25 @@ void BCLEditor::loadDocument()
 			return;
 		}
 		currentFilePath_ = bclFile.getFullPathName();
-		String fileText;
 		if (bclFile.getFileExtension() == ".syx") {
 			auto messages = Sysex::loadSysex(bclFile.getFullPathName().toStdString());
-			std::stringstream result;
-			for (const auto& message : messages) {
-				if (midikraft::BCR2000::isSysexFromBCR2000(message)) {
-					result << midikraft::BCR2000::convertSyxToText(message) << std::endl;
-				}
-			}
-			fileText = result.str();
+			loadDocumentFromSyx(messages);
 		}
 		else {
-			fileText = bclFile.loadFileAsString();
+			editor_->loadContent(bclFile.loadFileAsString());
 		}
-		editor_->loadContent(fileText);
 	}
+}
+
+void BCLEditor::loadDocumentFromSyx(std::vector<MidiMessage> const &messages)
+{
+	std::stringstream result;
+	for (const auto& message : messages) {
+		if (midikraft::BCR2000::isSysexFromBCR2000(message)) {
+			result << midikraft::BCR2000::convertSyxToText(message) << std::endl;
+		}
+	}
+	editor_->loadContent(result.str());
 }
 
 void BCLEditor::saveDocument()

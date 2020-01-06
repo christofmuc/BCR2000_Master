@@ -24,7 +24,9 @@ private:
 };
 
 //==============================================================================
-MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()), editor_(bcr_, [this]() { refreshListOfPresets();  }), grid_(4, 8, [this](int no) {})
+MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
+	editor_(bcr_, [this]() { refreshListOfPresets();  }), 
+	grid_(4, 8, [this](int no) { retrievePatch(no); })
 {
 	logger_ = std::make_unique<LogViewLogger>(logView_);
 	addAndMakeVisible(editor_);	
@@ -73,4 +75,21 @@ void MainComponent::refreshListOfPresets()
 		}
 	}
 	repaint();
+}
+
+void MainComponent::retrievePatch(int no)
+{
+	//TODO not really thread safe or even frantic user safe...
+	currentDownload_.clear();
+	midikraft::MidiController::HandlerHandle handle = midikraft::MidiController::makeOneHandle();
+	midikraft::MidiController::instance()->addMessageHandler(handle, [this, handle](MidiInput *source, MidiMessage const &message) {
+		if (bcr_->isPartOfDump(message)) {
+			currentDownload_.push_back(message);
+		}
+		if (bcr_->isDumpFinished(currentDownload_)) {
+			midikraft::MidiController::instance()->removeMessageHandler(handle);
+			editor_.loadDocumentFromSyx(currentDownload_);
+		}
+	});
+	midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput())->sendMessageNow(bcr_->requestDump(no));
 }
