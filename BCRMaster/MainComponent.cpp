@@ -24,11 +24,12 @@ private:
 };
 
 //==============================================================================
-MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()), editor_(bcr_)
+MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()), editor_(bcr_, [this]() { refreshListOfPresets();  }), grid_(4, 8, [this](int no) {})
 {
 	logger_ = std::make_unique<LogViewLogger>(logView_);
 	addAndMakeVisible(editor_);	
 	addAndMakeVisible(logView_);
+	addAndMakeVisible(grid_);
 	addAndMakeVisible(midiLogView_);
 
 	// Install our MidiLogger
@@ -54,5 +55,22 @@ void MainComponent::resized()
 	logView_.setBounds(area.removeFromBottom(200).reduced(10));
 	auto leftHalf = area.removeFromLeft(area.getWidth() / 2);
 	editor_.setBounds(leftHalf.reduced(10));
+	grid_.setBounds(area.removeFromTop(area.getHeight() / 2));
 	midiLogView_.setBounds(area.reduced(10));
+}
+
+void MainComponent::refreshListOfPresets()
+{
+	int i = 0;
+	for (auto const &preset : bcr_->listOfPresets()) {
+		auto button = grid_.buttonWithIndex(i++);
+		if (button) {
+			//button->setActive(false);
+			button->setButtonText(preset);
+			//button->setToggleState(false);
+			Colour color = Colours::aliceblue;
+			//button->setColour(TextButton::ColourIds::buttonColourId, color.darker());
+		}
+	}
+	repaint();
 }

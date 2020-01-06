@@ -19,7 +19,7 @@ class BCLEditor : public Component,
 	private Timer
 {
 public:
-	BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr);
+	BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void()> detectedHandler);
 	virtual ~BCLEditor();
 
 	virtual void resized() override;
@@ -46,6 +46,7 @@ private:
 	void aboutBox();
 
 	std::shared_ptr<midikraft::BCR2000> bcr_;
+	std::function<void()> detectedHandler_;
 	midikraft::AutoDetection autodetector_;
 	std::unique_ptr<CodeEditorComponent> editor_;
 	CodeDocument document_;

@@ -12,6 +12,7 @@
 #include "BCR2000.h"
 #include "LogView.h"
 #include "MidiLogView.h"
+#include "PatchButtonGrid.h"
 
 class LogViewLogger;
 
@@ -23,10 +24,13 @@ public:
 
     void resized() override;
 
+	void refreshListOfPresets();
+
 private:
 	std::shared_ptr<midikraft::BCR2000> bcr_;
 	BCLEditor editor_;
 	LogView logView_;
+	PatchButtonGrid grid_;
 	MidiLogView midiLogView_;
 	std::unique_ptr<LogViewLogger> logger_;
 

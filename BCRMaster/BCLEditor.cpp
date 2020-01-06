@@ -11,7 +11,8 @@
 #include <memory>
 #include <sstream>
 
-BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr) : bcr_(bcr), buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false)
+BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void()> detectedHandler) : bcr_(bcr), detectedHandler_(detectedHandler),
+	buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false)
 {
 	editor_ = std::make_unique<CodeEditorComponent>(document_, nullptr);
 	addAndMakeVisible(editor_.get());
@@ -21,20 +22,28 @@ BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr) : bcr_(bcr), butto
 			devices.push_back(bcr_);
 			autodetector_.autoconfigure(devices);
 		}}},
-		{ "load", { 1, "Open (CTRL-O)", [this]() {
+		{ "list", {1, "Refresh list", [this]() {
+			bcr_->refreshListOfPresets([this]() {
+				// Back to the UI thread please
+				MessageManager::callAsync([this]() {
+					detectedHandler_();
+				});
+			});
+		}}},
+		{ "load", { 2, "Open (CTRL-O)", [this]() {
 			loadDocument();
 			editor_->grabKeyboardFocus();
 		}, 0x4F /* O */, ModifierKeys::ctrlModifier}},
-		{ "save", { 2, "Save (CTRL-S)", [this]() {
+		{ "save", { 3, "Save (CTRL-S)", [this]() {
 			saveDocument();
 		}, 0x53 /* S */, ModifierKeys::ctrlModifier}},
-		{ "saveAs", { 3, "Save as (CTRL-A)", [this]() {
+		{ "saveAs", { 4, "Save as (CTRL-A)", [this]() {
 			saveAsDocument();
 		}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
-		{ "about", { 4, "About", [this]() {
+		{ "about", { 5, "About", [this]() {
 			aboutBox();
 		}, -1, 0}},
-		{ "close", { 5, "Close (CTRL-W)", []() {
+		{ "close", { 6, "Close (CTRL-W)", []() {
 			JUCEApplicationBase::quit();
 		}, 0x57 /* W */, ModifierKeys::ctrlModifier}}
 	};
