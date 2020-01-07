@@ -173,7 +173,7 @@ void BCLEditor::saveAsDocument()
 void BCLEditor::sendToBCR()
 {
 	auto sysex = bcr_->convertToSyx(document_.getAllContent().toStdString());
-	bcr_->sendSysExToBCR(midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput()), sysex, SimpleLogger::instance(), [this]() {
+	bcr_->sendSysExToBCR(midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput()), sysex, SimpleLogger::instance(), [this](std::vector<midikraft::BCR2000::BCRError> const &errors) {
 		bcr_->invalidateListOfPresets();
 	});
 }
