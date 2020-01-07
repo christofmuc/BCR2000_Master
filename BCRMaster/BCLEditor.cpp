@@ -44,10 +44,13 @@ BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void
 		{ "saveAs", { 4, "Save as (CTRL-A)", [this]() {
 			saveAsDocument();
 		}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
-		{ "about", { 5, "About", [this]() {
+		{ "send", { 5, "Send to BCR", [this]() {
+			sendToBCR();
+		}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
+		{ "about", { 6, "About", [this]() {
 			aboutBox();
 		}, -1, 0}},
-		{ "close", { 6, "Close (CTRL-W)", []() {
+		{ "close", { 7, "Close (CTRL-W)", []() {
 			JUCEApplicationBase::quit();
 		}, 0x57 /* W */, ModifierKeys::ctrlModifier}}
 	};
@@ -165,6 +168,14 @@ void BCLEditor::saveAsDocument()
 		currentFilePath_ = chosenFile.getFullPathName();
 		saveDocument();
 	}
+}
+
+void BCLEditor::sendToBCR()
+{
+	auto sysex = bcr_->convertToSyx(document_.getAllContent().toStdString());
+	bcr_->sendSysExToBCR(midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput()), sysex, SimpleLogger::instance(), [this]() {
+		bcr_->invalidateListOfPresets();
+	});
 }
 
 void BCLEditor::aboutBox()

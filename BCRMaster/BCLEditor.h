@@ -44,6 +44,8 @@ private:
 	void saveDocument();
 	void saveAsDocument();
 
+	void sendToBCR();
+
 	void aboutBox();
 
 	std::shared_ptr<midikraft::BCR2000> bcr_;
