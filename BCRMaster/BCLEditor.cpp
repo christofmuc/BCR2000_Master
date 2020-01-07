@@ -8,8 +8,12 @@
 
 #include "AutoDetection.h"
 
+#include "Settings.h"
+
 #include <memory>
 #include <sstream>
+
+const char *kLastPath = "LastDocumentPath";
 
 BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void()> detectedHandler) : bcr_(bcr), detectedHandler_(detectedHandler),
 	buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false)
@@ -98,14 +102,15 @@ void BCLEditor::loadDocument(std::string const &document)
 
 void BCLEditor::loadDocument()
 {
-	File defaultExampleLocation = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("BCR2000_Presets");
+	std::string lastPath = Settings::instance().get(kLastPath, File::getSpecialLocation(File::userDocumentsDirectory).getFullPathName().toStdString());
 	FileChooser chooser("Please select the BCR2000 preset file to load...",
-		defaultExampleLocation,
+		File(lastPath),
 		"*.syx;*.bcr;*.bcl");
 
 	if (chooser.browseForFileToOpen())
 	{
 		File bclFile(chooser.getResult());
+		Settings::instance().set(kLastPath, bclFile.getParentDirectory().getFullPathName().toStdString());
 		if (!bclFile.existsAsFile()) {
 			return;
 		}

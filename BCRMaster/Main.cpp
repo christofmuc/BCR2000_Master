@@ -7,6 +7,9 @@
 #include "JuceHeader.h"
 
 #include "MainComponent.h"
+
+#include "Settings.h"
+
 #include <memory>
 
 //==============================================================================
@@ -24,6 +27,7 @@ public:
     void initialise (const String& commandLine) override
     {
         // This method is where you should put your application's initialization code..
+		Settings::setSettingsID("BCRMaster");
 
         mainWindow = std::make_unique<MainWindow> (getApplicationName());
     }
