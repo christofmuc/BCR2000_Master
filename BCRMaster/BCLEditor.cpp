@@ -1,3 +1,4 @@
+#include "..\juce-widgets\SimpleTable.h"
 #include "BCLEditor.h"
 
 #include "StreamLogger.h"
@@ -15,42 +16,54 @@
 
 const char *kLastPath = "LastDocumentPath";
 
+template <>
+void visit(midikraft::BCR2000::BCRError const &errorStruct, int column, std::function<void(std::string const &)> visitor) {
+	switch (column) {
+	case 1: visitor(String(errorStruct.lineNumber).toStdString()); break;
+	case 2: visitor(String(errorStruct.errorCode).toStdString()); break;
+	case 3: visitor(errorStruct.errorText); break;
+	case 4: visitor(errorStruct.lineText); break;
+	}
+}
+
 BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void()> detectedHandler) : bcr_(bcr), detectedHandler_(detectedHandler),
-	buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false)
+	buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false), currentError_({ "Line", "Error code", "Error description", "Text" }, { })
 {
 	editor_ = std::make_unique<CodeEditorComponent>(document_, nullptr);
 	addAndMakeVisible(editor_.get());
 	LambdaButtonStrip::TButtonMap buttons = {
 		{ "connect", {0, "Connect to BCR2000", [this]() {
+			MouseCursor::showWaitCursor();
 			std::vector<std::shared_ptr<midikraft::SimpleDiscoverableDevice>> devices;
 			devices.push_back(bcr_);
 			autodetector_.autoconfigure(devices);
-		}}},
-		{ "list", {1, "Refresh list", [this]() {
+			bcr_->invalidateListOfPresets();
 			bcr_->refreshListOfPresets([this]() {
 				// Back to the UI thread please
 				MessageManager::callAsync([this]() {
 					detectedHandler_();
+					MouseCursor::hideWaitCursor();
 				});
 			});
+			
 		}}},
-		{ "load", { 2, "Open (CTRL-O)", [this]() {
+		{ "load", { 1, "Open (CTRL-O)", [this]() {
 			loadDocument();
 			editor_->grabKeyboardFocus();
 		}, 0x4F /* O */, ModifierKeys::ctrlModifier}},
-		{ "save", { 3, "Save (CTRL-S)", [this]() {
+		{ "save", { 2, "Save (CTRL-S)", [this]() {
 			saveDocument();
 		}, 0x53 /* S */, ModifierKeys::ctrlModifier}},
-		{ "saveAs", { 4, "Save as (CTRL-A)", [this]() {
+		{ "saveAs", { 3, "Save as (CTRL-A)", [this]() {
 			saveAsDocument();
 		}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
-		{ "send", { 5, "Send to BCR", [this]() {
+		{ "send", { 4, "Send to BCR", [this]() {
 			sendToBCR();
 		}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
-		{ "about", { 6, "About", [this]() {
+		{ "about", { 5, "About", [this]() {
 			aboutBox();
 		}, -1, 0}},
-		{ "close", { 7, "Close (CTRL-W)", []() {
+		{ "close", { 6, "Close (CTRL-W)", []() {
 			JUCEApplicationBase::quit();
 		}, 0x57 /* W */, ModifierKeys::ctrlModifier}}
 	};
@@ -60,8 +73,6 @@ BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void
 	addAndMakeVisible(stdErrLabel_);
 	addAndMakeVisible(currentError_);
 	stdErrLabel_.setText("stderr:", dontSendNotification);
-	currentError_.setReadOnly(true);
-	currentError_.setMultiLine(true, false);
 	document_.addListener(this);
 
 	helpText_.setReadOnly(true);
@@ -175,6 +186,7 @@ void BCLEditor::sendToBCR()
 	auto sysex = bcr_->convertToSyx(document_.getAllContent().toStdString());
 	bcr_->sendSysExToBCR(midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput()), sysex, SimpleLogger::instance(), [this](std::vector<midikraft::BCR2000::BCRError> const &errors) {
 		bcr_->invalidateListOfPresets();
+		currentError_.updateData(errors);
 	});
 }
 

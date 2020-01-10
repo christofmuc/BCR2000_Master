@@ -12,6 +12,7 @@
 #include "AutoDetection.h"
 
 #include "LambdaButtonStrip.h"
+#include "SimpleTable.h"
 
 class BCLEditor : public Component,
 	public ApplicationCommandTarget,
@@ -54,7 +55,7 @@ private:
 	std::unique_ptr<CodeEditorComponent> editor_;
 	CodeDocument document_;
 	LambdaButtonStrip buttons_;
-	TextEditor currentError_;
+	SimpleTable<std::vector<midikraft::BCR2000::BCRError>> currentError_;
 	StringArray errors_;
 	TextEditor helpText_;
 	Label stdErrLabel_;
