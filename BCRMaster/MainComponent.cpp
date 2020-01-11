@@ -46,6 +46,7 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 
 MainComponent::~MainComponent()
 {
+	Logger::setCurrentLogger(nullptr);
 }
 
 void MainComponent::resized()
