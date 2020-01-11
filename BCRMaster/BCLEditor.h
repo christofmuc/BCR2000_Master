@@ -28,6 +28,9 @@ public:
 	void loadDocument(std::string const &document);
 	void loadDocumentFromSyx(std::vector<MidiMessage> const &messages);
 
+	// Navigate document
+	void jumpToLine(int rowNumber);
+
 	// Code document listener
 	virtual void codeDocumentTextInserted(const String& newText, int insertIndex) override;
 	virtual void codeDocumentTextDeleted(int startIndex, int endIndex) override;
@@ -59,6 +62,7 @@ private:
 	StringArray errors_;
 	TextEditor helpText_;
 	Label stdErrLabel_;
+	std::vector<midikraft::BCR2000::BCRError> lastErrors_;
 
 	ApplicationCommandManager commandManager_;
 	String currentFilePath_;

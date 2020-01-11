@@ -27,7 +27,15 @@ void visit(midikraft::BCR2000::BCRError const &errorStruct, int column, std::fun
 }
 
 BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void()> detectedHandler) : bcr_(bcr), detectedHandler_(detectedHandler),
-	buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false), currentError_({ "Line", "Error code", "Error description", "Text" }, { })
+	buttons_(201, LambdaButtonStrip::Direction::Horizontal), grabbedFocus_(false),
+	currentError_({ "Line", "Error code", "Error description", "Text" }, { }, [this](int rowSelected) {
+		jumpToLine(rowSelected - 1);
+		int errorRow = -1;
+		if (rowSelected < lastErrors_.size()) {
+			errorRow = lastErrors_[rowSelected].lineNumber;
+		}
+		editor_->selectRegion(CodeDocument::Position(document_, errorRow - 1, 0), CodeDocument::Position(document_, errorRow, 0));
+	})
 {
 	editor_ = std::make_unique<CodeEditorComponent>(document_, nullptr);
 	addAndMakeVisible(editor_.get());
@@ -150,6 +158,11 @@ void BCLEditor::loadDocumentFromSyx(std::vector<MidiMessage> const &messages)
 	editor_->loadContent(result.str());
 }
 
+void BCLEditor::jumpToLine(int rowNumber)
+{
+	editor_->scrollToLine(rowNumber);
+}
+
 void BCLEditor::saveDocument()
 {
 	if (currentFilePath_.isNotEmpty()) {
@@ -183,10 +196,11 @@ void BCLEditor::saveAsDocument()
 
 void BCLEditor::sendToBCR()
 {
-	auto sysex = bcr_->convertToSyx(document_.getAllContent().toStdString());
+	auto sysex = bcr_->convertToSyx(document_.getAllContent().toStdString(), true); // Make sure to set verbatim flag, otherwise the line numbers won't match
 	bcr_->sendSysExToBCR(midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput()), sysex, SimpleLogger::instance(), [this](std::vector<midikraft::BCR2000::BCRError> const &errors) {
 		bcr_->invalidateListOfPresets();
 		currentError_.updateData(errors);
+		lastErrors_ = errors;
 	});
 }
 
