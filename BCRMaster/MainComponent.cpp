@@ -59,15 +59,7 @@ MainComponent::~MainComponent()
 
 void MainComponent::resized()
 {
-    // This is called when the MainContentComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
 	auto area = getLocalBounds();	
-	//logView_.setBounds(area.removeFromBottom(200).reduced(10));
-	//auto leftHalf = area.removeFromLeft(area.getWidth() / 2);
-	//tabs_.setBounds(leftHalf.reduced(10));
-	//grid_.setBounds(area.removeFromTop(area.getHeight() / 2));
-	//midiLogView_.setBounds(area.reduced(10));
 
 	// make a list of two of our child components that we want to reposition
 	Component* comps[] = { &topArea_, &resizerBar_, &logArea_};
