@@ -121,7 +121,7 @@ BCLEditor *MainComponent::createNewEditor(std::string const &tabName)
 {
 	auto editor = new BCLEditor(bcr_, [this]() { refreshListOfPresets();  });
 	editors_.add(editor);
-	tabs_.addTab(tabName, Colours::black, editor, false);
+	tabs_.addTab(tabName, getLookAndFeel().findColour(Label::backgroundColourId), editor, false);
 	tabs_.addAndMakeVisible(editor);
 	return editor;
 }
