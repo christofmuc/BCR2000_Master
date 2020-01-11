@@ -33,7 +33,7 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	addAndMakeVisible(logView_);
 	addAndMakeVisible(grid_);
 	addAndMakeVisible(midiLogView_);
-	createNewEditor();
+	createNewEditor("New");
 
 	// Install our MidiLogger
 	midikraft::MidiController::instance()->setMidiLogFunction([this](const MidiMessage& message, const String& source, bool isOut) {
@@ -84,14 +84,15 @@ void MainComponent::retrievePatch(int no)
 	//TODO not really thread safe or even frantic user safe...
 	currentDownload_.clear();
 	midikraft::MidiController::HandlerHandle handle = midikraft::MidiController::makeOneHandle();
-	midikraft::MidiController::instance()->addMessageHandler(handle, [this, handle](MidiInput *source, MidiMessage const &message) {
+	midikraft::MidiController::instance()->addMessageHandler(handle, [this, handle, no](MidiInput *source, MidiMessage const &message) {
 		if (bcr_->isPartOfDump(message)) {
 			currentDownload_.push_back(message);
 		}
 		if (bcr_->isDumpFinished(currentDownload_)) {
 			midikraft::MidiController::instance()->removeMessageHandler(handle);
-			MessageManager::callAsync([this]() {
-				auto editor = createNewEditor();
+			MessageManager::callAsync([this, no]() {
+				auto patchName = grid_.buttonWithIndex(no) ? grid_.buttonWithIndex(no)->getButtonText() : "unnamed";
+				auto editor = createNewEditor(patchName.toStdString());
 				editor->loadDocumentFromSyx(currentDownload_);
 				tabs_.setCurrentTabIndex(tabs_.getNumTabs() - 1);
 			});
@@ -100,11 +101,11 @@ void MainComponent::retrievePatch(int no)
 	midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput())->sendMessageNow(bcr_->requestDump(no));
 }
 
-BCLEditor *MainComponent::createNewEditor()
+BCLEditor *MainComponent::createNewEditor(std::string const &tabName)
 {
 	auto editor = new BCLEditor(bcr_, [this]() { refreshListOfPresets();  });
 	editors_.add(editor);
-	tabs_.addTab("New", Colours::black, editor, false);
+	tabs_.addTab(tabName, Colours::black, editor, false);
 	tabs_.addAndMakeVisible(editor);
 	return editor;
 }

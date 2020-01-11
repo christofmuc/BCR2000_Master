@@ -28,7 +28,7 @@ public:
 
 private:
 	void retrievePatch(int no);
-	BCLEditor *createNewEditor();
+	BCLEditor *createNewEditor(std::string const &tabName);
 
 	std::shared_ptr<midikraft::BCR2000> bcr_;
 	TabbedComponent tabs_;
