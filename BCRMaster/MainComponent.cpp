@@ -24,14 +24,17 @@ private:
 };
 
 //==============================================================================
-MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),	
+MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	tabs_(TabbedButtonBar::Orientation::TabsAtTop),
 	grid_(4, 8, [this](int no) { retrievePatch(no); }),
 	resizerBar_(&stretchableManager_, 1, false),
 	logArea_(&logView_, &midiLogView_, -0.5, 0.5),
 	topArea_(&tabs_, &grid_, -0.7, -0.3)
 {
+	menu_ = std::make_unique<BCRMenu>();
+	menuBar_.setModel(menu_.get());
 	logger_ = std::make_unique<LogViewLogger>(logView_);
+	addAndMakeVisible(menuBar_);
 	addAndMakeVisible(resizerBar_);
 	addAndMakeVisible(logArea_);
 	addAndMakeVisible(topArea_);
@@ -40,16 +43,16 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	// Resizer bar allows to enlarge the log area
 	stretchableManager_.setItemLayout(0, -0.1, -0.9, -0.8); // The editor tab window prefers to get 80%
 	stretchableManager_.setItemLayout(1, 5, 5, 5);  // The resizer is hard-coded to 5 pixels
-	stretchableManager_.setItemLayout(2, -0.1, -0.9,  -0.2);
+	stretchableManager_.setItemLayout(2, -0.1, -0.9, -0.2);
 
 	// Install our MidiLogger
 	midikraft::MidiController::instance()->setMidiLogFunction([this](const MidiMessage& message, const String& source, bool isOut) {
 		midiLogView_.addMessageToList(message, source, isOut);
 	});
 
-    // Make sure you set the size of the component after
-    // you add any child components.
-    setSize (1280, 800);
+	// Make sure you set the size of the component after
+	// you add any child components.
+	setSize(1280, 800);
 }
 
 MainComponent::~MainComponent()
@@ -59,10 +62,11 @@ MainComponent::~MainComponent()
 
 void MainComponent::resized()
 {
-	auto area = getLocalBounds();	
+	auto area = getLocalBounds();
+	menuBar_.setBounds(area.removeFromTop(50));
 
 	// make a list of two of our child components that we want to reposition
-	Component* comps[] = { &topArea_, &resizerBar_, &logArea_};
+	Component* comps[] = { &topArea_, &resizerBar_, &logArea_ };
 
 	// this will position the 3 components, one above the other, to fit
 	// vertically into the rectangle provided.
@@ -116,4 +120,19 @@ BCLEditor *MainComponent::createNewEditor(std::string const &tabName)
 	tabs_.addTab(tabName, getLookAndFeel().findColour(Label::backgroundColourId), editor, false);
 	tabs_.addAndMakeVisible(editor);
 	return editor;
+}
+
+StringArray BCRMenu::getMenuBarNames()
+{
+	return StringArray({ "File", "Help" });
+}
+
+PopupMenu BCRMenu::getMenuForIndex(int topLevelMenuIndex, const String& menuName)
+{
+	return PopupMenu();
+}
+
+void BCRMenu::menuItemSelected(int menuItemID, int topLevelMenuIndex)
+{
+
 }

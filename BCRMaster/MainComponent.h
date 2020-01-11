@@ -17,6 +17,13 @@
 
 class LogViewLogger;
 
+class BCRMenu : public MenuBarModel {
+public:
+	StringArray getMenuBarNames() override;
+	PopupMenu getMenuForIndex(int topLevelMenuIndex, const String& menuName) override;
+	void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
+};
+
 class MainComponent   : public Component
 {
 public:
@@ -40,7 +47,9 @@ private:
 	StretchableLayoutResizerBar resizerBar_;
 	MidiLogView midiLogView_;
 	std::unique_ptr<LogViewLogger> logger_;
+	std::unique_ptr<BCRMenu> menu_;
 	std::vector<MidiMessage> currentDownload_;
+	MenuBarComponent menuBar_;
 
 	HorizontalLayoutContainer topArea_;
 	HorizontalLayoutContainer logArea_;
