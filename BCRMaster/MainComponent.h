@@ -13,6 +13,7 @@
 #include "LogView.h"
 #include "MidiLogView.h"
 #include "PatchButtonGrid.h"
+#include "HorizontalLayoutContainer.h"
 
 class LogViewLogger;
 
@@ -35,9 +36,14 @@ private:
 	OwnedArray<BCLEditor> editors_;
 	LogView logView_;
 	PatchButtonGrid grid_;
+	StretchableLayoutManager stretchableManager_;
+	StretchableLayoutResizerBar resizerBar_;
 	MidiLogView midiLogView_;
 	std::unique_ptr<LogViewLogger> logger_;
 	std::vector<MidiMessage> currentDownload_;
+
+	HorizontalLayoutContainer topArea_;
+	HorizontalLayoutContainer logArea_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
