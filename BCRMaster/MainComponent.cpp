@@ -29,7 +29,10 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	grid_(4, 8, [this](int no) { retrievePatch(no); })
 {
 	logger_ = std::make_unique<LogViewLogger>(logView_);
-	addAndMakeVisible(editor_);	
+	addAndMakeVisible(multiDocs_);
+	auto docWindow = new MultiBCRDDocumentWindow(editor_);
+	multiDocs_.addDocument(docWindow, Colours::slategrey, true);
+	addAndMakeVisible(docWindow);	
 	addAndMakeVisible(logView_);
 	addAndMakeVisible(grid_);
 	addAndMakeVisible(midiLogView_);
@@ -55,8 +58,8 @@ void MainComponent::resized()
     // update their positions.
 	auto area = getLocalBounds();	
 	logView_.setBounds(area.removeFromBottom(200).reduced(10));
-	auto leftHalf = area.removeFromLeft(area.getWidth() / 2);
-	editor_.setBounds(leftHalf.reduced(10));
+	auto leftHalf = area.removeFromLeft(area.getWidth() * 4 / 5);
+	multiDocs_.setBounds(leftHalf.reduced(10));
 	grid_.setBounds(area.removeFromTop(area.getHeight() / 2));
 	midiLogView_.setBounds(area.reduced(10));
 }
@@ -92,4 +95,9 @@ void MainComponent::retrievePatch(int no)
 		}
 	});
 	midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput())->sendMessageNow(bcr_->requestDump(no));
+}
+
+bool MultiBCRDocuments::tryToCloseDocument(Component* component)
+{
+	return true;
 }

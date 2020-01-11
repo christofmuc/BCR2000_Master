@@ -16,6 +16,21 @@
 
 class LogViewLogger;
 
+class MultiBCRDocuments : public MultiDocumentPanel {
+public:
+	bool tryToCloseDocument(Component* component) override;
+};
+
+class MultiBCRDDocumentWindow : public MultiDocumentPanelWindow {
+public:
+	MultiBCRDDocumentWindow(BCLEditor &editor) : MultiDocumentPanelWindow(Colours::black), editor_(editor) { addAndMakeVisible(&editor_);  }
+
+	virtual void resized() override { editor_.setBoundsInset(BorderSize<int>(8)); }
+
+private:
+	BCLEditor &editor_;
+};
+
 class MainComponent   : public Component
 {
 public:
@@ -30,6 +45,7 @@ private:
 	void retrievePatch(int no);
 
 	std::shared_ptr<midikraft::BCR2000> bcr_;
+	MultiBCRDocuments multiDocs_;
 	BCLEditor editor_;
 	LogView logView_;
 	PatchButtonGrid grid_;
