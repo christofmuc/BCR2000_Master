@@ -28,9 +28,11 @@ public:
 
 private:
 	void retrievePatch(int no);
+	BCLEditor *createNewEditor();
 
 	std::shared_ptr<midikraft::BCR2000> bcr_;
-	BCLEditor editor_;
+	TabbedComponent tabs_;
+	OwnedArray<BCLEditor> editors_;
 	LogView logView_;
 	PatchButtonGrid grid_;
 	MidiLogView midiLogView_;

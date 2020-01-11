@@ -24,15 +24,16 @@ private:
 };
 
 //==============================================================================
-MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
-	editor_(bcr_, [this]() { refreshListOfPresets();  }), 
+MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),	
+	tabs_(TabbedButtonBar::Orientation::TabsAtTop),
 	grid_(4, 8, [this](int no) { retrievePatch(no); })
 {
 	logger_ = std::make_unique<LogViewLogger>(logView_);
-	addAndMakeVisible(editor_);	
+	addAndMakeVisible(tabs_);
 	addAndMakeVisible(logView_);
 	addAndMakeVisible(grid_);
 	addAndMakeVisible(midiLogView_);
+	createNewEditor();
 
 	// Install our MidiLogger
 	midikraft::MidiController::instance()->setMidiLogFunction([this](const MidiMessage& message, const String& source, bool isOut) {
@@ -57,7 +58,7 @@ void MainComponent::resized()
 	auto area = getLocalBounds();	
 	logView_.setBounds(area.removeFromBottom(200).reduced(10));
 	auto leftHalf = area.removeFromLeft(area.getWidth() / 2);
-	editor_.setBounds(leftHalf.reduced(10));
+	tabs_.setBounds(leftHalf.reduced(10));
 	grid_.setBounds(area.removeFromTop(area.getHeight() / 2));
 	midiLogView_.setBounds(area.reduced(10));
 }
@@ -89,8 +90,20 @@ void MainComponent::retrievePatch(int no)
 		}
 		if (bcr_->isDumpFinished(currentDownload_)) {
 			midikraft::MidiController::instance()->removeMessageHandler(handle);
-			editor_.loadDocumentFromSyx(currentDownload_);
+			MessageManager::callAsync([this]() {
+				auto editor = createNewEditor();
+				editor->loadDocumentFromSyx(currentDownload_);
+			});
 		}
 	});
 	midikraft::MidiController::instance()->getMidiOutput(bcr_->midiOutput())->sendMessageNow(bcr_->requestDump(no));
+}
+
+BCLEditor *MainComponent::createNewEditor()
+{
+	auto editor = new BCLEditor(bcr_, [this]() { refreshListOfPresets();  });
+	editors_.add(editor);
+	tabs_.addTab("New", Colours::black, editor, false);
+	tabs_.addAndMakeVisible(editor);
+	return editor;
 }
