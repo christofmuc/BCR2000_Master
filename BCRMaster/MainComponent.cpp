@@ -93,6 +93,7 @@ void MainComponent::retrievePatch(int no)
 			MessageManager::callAsync([this]() {
 				auto editor = createNewEditor();
 				editor->loadDocumentFromSyx(currentDownload_);
+				tabs_.setCurrentTabIndex(tabs_.getNumTabs() - 1);
 			});
 		}
 	});
