@@ -33,22 +33,13 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	buttons_(301, LambdaButtonStrip::Direction::Horizontal)
 {
 	LambdaButtonStrip::TButtonMap buttons = {
-	{ "Detect", {0, "Connect to BCR2000", [this]() {
-		MouseCursor::showWaitCursor();
-		std::vector<std::shared_ptr<midikraft::SimpleDiscoverableDevice>> devices;
-		devices.push_back(bcr_);
-		//autodetector_.autoconfigure(devices);
-		bcr_->invalidateListOfPresets();
-		bcr_->refreshListOfPresets([this]() {
-			// Back to the UI thread please
-			MessageManager::callAsync([this]() {
-				//detectedHandler_();
-				MouseCursor::hideWaitCursor();
-			});
-		});
-
-	}}},
-	{ "Open", { 1, "Open", [this]() {
+	{ "Detect", {0, "Detect", [this]() {
+		detectBCR();
+	}, 0x44 /* D */, ModifierKeys::ctrlModifier}},
+	{ "Refresh preset list", {1, "Refresh preset list", [this]() {
+		refreshFromBCR();
+	}, 0x52 /* R */, ModifierKeys::ctrlModifier}},
+	{ "Open", { 2, "Open", [this]() {
 		auto active = createNewEditor("New");
 		if (active->loadDocument()) {
 			File loaded(active->currentFileName());
@@ -61,30 +52,37 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 			delete active;
 		}
 	}, 0x4F /* O */, ModifierKeys::ctrlModifier}},
-	{ "Save", { 2, "Save", [this]() {
+	{ "Save", { 3, "Save", [this]() {
 		auto active = activeTab();
 		if (active) {
 			active->saveDocument();
 		}
 	}, 0x53 /* S */, ModifierKeys::ctrlModifier}},
-	{ "Save as...", { 3, "Save as...", [this]() {
+	{ "Save as...", { 4, "Save as...", [this]() {
 		auto active = activeTab();
 		if (active) {
 			active->saveAsDocument();
 		}
 	}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
-	{ "Send to BCR", { 4, "Send to BCR", [this]() {
+	{ "Send to BCR", { 5, "Send to BCR", [this]() {
 		auto active = activeTab();
 		if (active) {
 			active->sendToBCR();
 		}
-	}, 0x41 /* A */, ModifierKeys::ctrlModifier}},
-	{ "About", { 5, "About", [this]() {
+	}, 0x0D /* ENTER */, ModifierKeys::ctrlModifier}},
+	{ "Close", { 6, "Close", [this]() {
+		auto active = activeTab();
+		if (active) {
+			tabs_.removeTab(tabs_.getCurrentTabIndex());
+			editors_.removeObject(active, true);
+		}
+	}, 0x57 /* W */, ModifierKeys::ctrlModifier}},
+	{ "About", { 7, "About", [this]() {
 		aboutBox();
 	}, -1, 0}},
-	{ "Quit", { 6, "Quit", []() {
+	{ "Quit", { 8, "Quit", []() {
 		JUCEApplicationBase::quit();
-	}, 0x57 /* W */, ModifierKeys::ctrlModifier}}
+	}, 0x51 /* Q */, ModifierKeys::ctrlModifier}}
 	};
 	buttons_.setButtonDefinitions(buttons);
 	commandManager_.registerAllCommandsForTarget(&buttons_);
@@ -156,6 +154,28 @@ void MainComponent::refreshListOfPresets()
 		}
 	}
 	repaint();
+}
+
+void MainComponent::detectBCR()
+{
+	MouseCursor::showWaitCursor();
+	std::vector<std::shared_ptr<midikraft::SimpleDiscoverableDevice>> devices;
+	devices.push_back(bcr_);
+	autodetector_.autoconfigure(devices);
+	refreshFromBCR();
+}
+
+void MainComponent::refreshFromBCR()
+{
+	MouseCursor::showWaitCursor();
+	bcr_->invalidateListOfPresets();
+	bcr_->refreshListOfPresets([this]() {
+		// Back to the UI thread please
+		MessageManager::callAsync([this]() {
+			refreshListOfPresets(),
+			MouseCursor::hideWaitCursor();
+		});
+	});
 }
 
 void MainComponent::retrievePatch(int no)

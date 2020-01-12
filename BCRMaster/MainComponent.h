@@ -49,6 +49,8 @@ public:
 	bool perform(const InvocationInfo& info) override;
 
 private:
+	void detectBCR();
+	void refreshFromBCR();
 	void retrievePatch(int no);
 	BCLEditor *createNewEditor(std::string const &tabName);
 	void addNewEditor(std::string const &tabName, BCLEditor *editor);
