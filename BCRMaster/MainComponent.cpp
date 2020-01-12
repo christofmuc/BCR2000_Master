@@ -91,6 +91,7 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	// Stop the focus-based search for the commands, and rather route all command implementation into this MainComponent
 	// That was tricky to find out
 	commandManager_.setFirstCommandTarget(this);
+	addKeyListener(commandManager_.getKeyMappings());
 
 	// Setup menu structure
 	menu_ = std::make_unique<BCRMenu>(&commandManager_, &buttons_);
