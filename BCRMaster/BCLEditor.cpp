@@ -113,9 +113,16 @@ void BCLEditor::saveDocument()
 		if (bclFile.existsAsFile() && bclFile.hasWriteAccess()) {
 			bclFile.deleteFile();
 		}
-		FileOutputStream out(bclFile);
-		if (out.openedOk()) {
-			out.writeText(document_.getAllContent(), false, false, nullptr);
+		if (bclFile.getFileExtension().toLowerCase() == ".syx") {
+			auto messages = bcr_->convertToSyx(document_.getAllContent().toStdString(), true);
+			Sysex::saveSysex(bclFile.getFullPathName().toStdString(), messages);
+		}
+		else {
+			// Write as ASCII text
+			FileOutputStream out(bclFile);
+			if (out.openedOk()) {
+				out.writeText(document_.getAllContent(), false, false, nullptr);
+			}
 		}
 	}
 	else {
@@ -125,13 +132,15 @@ void BCLEditor::saveDocument()
 
 void BCLEditor::saveAsDocument()
 {
+	std::string lastPath = Settings::instance().get(kLastPath, File::getSpecialLocation(File::userDocumentsDirectory).getFullPathName().toStdString());
 	FileChooser chooser("Save as...",
-		File::getSpecialLocation(File::userHomeDirectory),
-		"*.bcl");
+		File(lastPath),
+		"*.bcl||*.syx");
 
 	if (chooser.browseForFileToSave(true))
 	{
 		File chosenFile(chooser.getResult());
+		Settings::instance().set(kLastPath, chosenFile.getParentDirectory().getFullPathName().toStdString());
 		currentFilePath_ = chosenFile.getFullPathName();
 		saveDocument();
 	}
