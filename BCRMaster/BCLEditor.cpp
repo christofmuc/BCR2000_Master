@@ -54,7 +54,7 @@ BCLEditor::~BCLEditor()
 void BCLEditor::resized()
 {
 	Rectangle<int> area(getLocalBounds());
-	currentError_.setBounds(area.removeFromBottom(200));
+	currentError_.setBounds(area.removeFromBottom(160).withTrimmedTop(8));
 	editor_->setBounds(area);
 }
 
