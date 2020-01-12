@@ -55,7 +55,7 @@ void BCLEditor::resized()
 {
 	Rectangle<int> area(getLocalBounds());
 	currentError_.setBounds(area.removeFromBottom(200));
-	editor_->setBounds(area.reduced(20));
+	editor_->setBounds(area);
 }
 
 void BCLEditor::loadDocument(std::string const &document)

@@ -13,7 +13,7 @@
 #include "LogView.h"
 #include "MidiLogView.h"
 #include "PatchButtonGrid.h"
-#include "HorizontalLayoutContainer.h"
+#include "InsetBox.h"
 #include "AutoDetection.h"
 
 class LogViewLogger;
@@ -72,8 +72,8 @@ private:
 	std::vector<MidiMessage> currentDownload_;
 	MenuBarComponent menuBar_;
 
-	HorizontalLayoutContainer topArea_;
-	HorizontalLayoutContainer logArea_;
+	InsetBox topArea_;
+	InsetBox logArea_;
 
 	LambdaButtonStrip buttons_;
 	ApplicationCommandManager commandManager_;

@@ -9,6 +9,8 @@
 #include "Logger.h"
 #include "MidiController.h"
 
+#include "HorizontalLayoutContainer.h"
+
 class LogViewLogger : public SimpleLogger {
 public:
 	LogViewLogger(LogView &logview) : logview_(logview) {}
@@ -28,8 +30,8 @@ MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	tabs_(TabbedButtonBar::Orientation::TabsAtTop),
 	grid_(4, 8, [this](int no) { retrievePatch(no); }),
 	resizerBar_(&stretchableManager_, 1, false),
-	logArea_(&logView_, &midiLogView_, -0.5, 0.5),
-	topArea_(&tabs_, &grid_, -0.7, -0.3),
+	logArea_(new HorizontalLayoutContainer(&logView_, &midiLogView_, -0.5, 0.5), BorderSize<int>(8)),
+	topArea_(new HorizontalLayoutContainer(&tabs_, &grid_, -0.7, -0.3), BorderSize<int>(8)),
 	buttons_(301, LambdaButtonStrip::Direction::Horizontal)
 {
 	LambdaButtonStrip::TButtonMap buttons = {
