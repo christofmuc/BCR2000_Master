@@ -9,13 +9,10 @@
 #include "JuceHeader.h"
 
 #include "BCR2000.h"
-#include "AutoDetection.h"
 
-#include "LambdaButtonStrip.h"
 #include "SimpleTable.h"
 
 class BCLEditor : public Component,
-	public ApplicationCommandTarget,
 	private CodeDocument::Listener,
 	private Timer
 {
@@ -35,34 +32,25 @@ public:
 	virtual void codeDocumentTextInserted(const String& newText, int insertIndex) override;
 	virtual void codeDocumentTextDeleted(int startIndex, int endIndex) override;
 
-	virtual ApplicationCommandTarget* getNextCommandTarget() override;
-	virtual void getAllCommands(Array<CommandID>& commands) override;
-	virtual void getCommandInfo(CommandID commandID, ApplicationCommandInfo& result) override;
-	virtual bool perform(const InvocationInfo& info) override;
-
 	// This is only to grab focus once
 	virtual void timerCallback() override;
 
-private:
-	void loadDocument();
+	bool loadDocument();
 	void saveDocument();
 	void saveAsDocument();
-
 	void sendToBCR();
 
-	void aboutBox();
+	String currentFileName() const;
 
+private:
 	std::shared_ptr<midikraft::BCR2000> bcr_;
-	std::function<void()> detectedHandler_;
-	midikraft::AutoDetection autodetector_;
+	std::function<void()> detectedHandler_;	
 	std::unique_ptr<CodeEditorComponent> editor_;
 	CodeDocument document_;
-	LambdaButtonStrip buttons_;
 	SimpleTable<std::vector<midikraft::BCR2000::BCRError>> currentError_;
 	StringArray errors_;
-	std::vector<midikraft::BCR2000::BCRError> lastErrors_;
+	std::vector<midikraft::BCR2000::BCRError> lastErrors_;	
 
-	ApplicationCommandManager commandManager_;
 	String currentFilePath_;
 	bool grabbedFocus_;
 };

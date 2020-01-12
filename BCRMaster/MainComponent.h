@@ -14,17 +14,25 @@
 #include "MidiLogView.h"
 #include "PatchButtonGrid.h"
 #include "HorizontalLayoutContainer.h"
+#include "AutoDetection.h"
 
 class LogViewLogger;
 
 class BCRMenu : public MenuBarModel {
 public:
+	BCRMenu(ApplicationCommandManager *commandManager, LambdaButtonStrip *lambdaButtons);
+
 	StringArray getMenuBarNames() override;
 	PopupMenu getMenuForIndex(int topLevelMenuIndex, const String& menuName) override;
 	void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
+
+private:
+	std::map<int, std::pair<std::string, std::vector<std::string>>> menuStructure_;
+	ApplicationCommandManager *commandManager_;
+	LambdaButtonStrip *lambdaButtons_;
 };
 
-class MainComponent   : public Component
+class MainComponent : public Component, public ApplicationCommandTarget
 {
 public:
     MainComponent();
@@ -34,10 +42,21 @@ public:
 
 	void refreshListOfPresets();
 
+	// Required to process commands. That seems a bit heavyweight
+	ApplicationCommandTarget* getNextCommandTarget() override;
+	void getAllCommands(Array<CommandID>& commands) override;
+	void getCommandInfo(CommandID commandID, ApplicationCommandInfo& result) override;
+	bool perform(const InvocationInfo& info) override;
+
 private:
 	void retrievePatch(int no);
 	BCLEditor *createNewEditor(std::string const &tabName);
+	void addNewEditor(std::string const &tabName, BCLEditor *editor);
+	BCLEditor *activeTab();
 
+	void aboutBox();
+
+	midikraft::AutoDetection autodetector_;
 	std::shared_ptr<midikraft::BCR2000> bcr_;
 	TabbedComponent tabs_;
 	OwnedArray<BCLEditor> editors_;
@@ -53,6 +72,9 @@ private:
 
 	HorizontalLayoutContainer topArea_;
 	HorizontalLayoutContainer logArea_;
+
+	LambdaButtonStrip buttons_;
+	ApplicationCommandManager commandManager_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
