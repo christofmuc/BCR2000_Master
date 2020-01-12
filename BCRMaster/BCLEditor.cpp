@@ -77,9 +77,7 @@ BCLEditor::BCLEditor(std::shared_ptr<midikraft::BCR2000> bcr, std::function<void
 	};
 	buttons_.setButtonDefinitions(buttons);
 	addAndMakeVisible(buttons_);
-	addAndMakeVisible(stdErrLabel_);
 	addAndMakeVisible(currentError_);
-	stdErrLabel_.setText("stderr:", dontSendNotification);
 	document_.addListener(this);
 
 	// Setup hot keys
@@ -101,11 +99,7 @@ void BCLEditor::resized()
 	Rectangle<int> area(getLocalBounds());
 
 	buttons_.setBounds(area.removeFromTop(60).reduced(20));
-
-	auto stdErr = area.removeFromBottom(200);
-	stdErrLabel_.setBounds(stdErr.removeFromTop(20));
-	currentError_.setBounds(stdErr);
-
+	currentError_.setBounds(area.removeFromBottom(200));
 	editor_->setBounds(area.reduced(20));
 }
 

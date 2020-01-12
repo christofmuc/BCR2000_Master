@@ -60,7 +60,6 @@ private:
 	LambdaButtonStrip buttons_;
 	SimpleTable<std::vector<midikraft::BCR2000::BCRError>> currentError_;
 	StringArray errors_;
-	Label stdErrLabel_;
 	std::vector<midikraft::BCR2000::BCRError> lastErrors_;
 
 	ApplicationCommandManager commandManager_;
