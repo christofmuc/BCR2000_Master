@@ -12,8 +12,8 @@ environment:
 build_script:
 - cmd: |
     cmake -S . -B builds -G "Visual Studio 15 2017 Win64" 
-    cmake --build Builds\Windows --config Debug
-    cmake --build Builds\Windows --config Release
+    cmake --build builds --config Debug
+    cmake --build builds --config Release
 - sh: >-
     cmake -S . -B builds &&
     cmake -S . -B builds/Debug -DCMAKE_BUILD_TYPE=DEBUG &&
