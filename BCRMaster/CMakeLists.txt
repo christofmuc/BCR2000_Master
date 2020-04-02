@@ -38,6 +38,7 @@ set(SOURCES
 	Main.cpp
 	setup.iss
 	redist/agpl-3.0.txt
+	../ideas.txt
 )
 
 add_executable(BCRMaster WIN32 ${SOURCES})
@@ -46,8 +47,7 @@ IF(WIN32)
 	target_link_libraries(BCRMaster PRIVATE ${JUCE_LIBRARIES} juce-utils juce-widgets midikraft-base midikraft-behringer-bcr2000)
 ELSEIF(UNIX)
 	target_link_libraries(BCRMaster PRIVATE 
-		${JUCE_LIBRARIES} 
-		PkgConfig::WEBKIT 
+		${JUCE_LIBRARIES} 		
 		PkgConfig::GTK 
 		Xext 
 		X11 
