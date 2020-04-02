@@ -56,6 +56,7 @@ ELSEIF(UNIX)
 		${CMAKE_DL_LIBS} 
 		freetype 
 		curl 
+		asound
 		juce-utils 
 		juce-widgets
 		midikraft-base
