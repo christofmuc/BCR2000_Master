@@ -1,0 +1,34 @@
+Further improvement ideas for BCRMaster
+=======================================
+
+UI improvements:
+
+* Window header should show document title
+* Asterisk should mark if modified
+* Could open with New empty document shown
+* Tabs are really hard visually to see 
+* Could show Icon somewhere if BCR is detected, and autodetect on start
+* Editor could get Find, Search and Replace?
+* Menu items could get enabled/disabled correctly
+* Could use a few more wait progress dialogs while detecting etc.
+* Could make clearer that clicking on button to the right will load preset from BCR
+
+MIDI features
+* Could allow non-autodetection definition of BCR
+* Could add MIDI routing (once developed), including parameter mapping ala Matrix Mod Matrix
+
+Librarian features
+* Could allow to save all of BCR content (open all, save all?)
+
+Editor
+* Syntax Highlighting for BCL!
+
+Visual
+* Show visual layout of BCR, and show controller parameters there?
+* Allow for Controller description (as comment) in BCR file, and render that in the BCRView
+* Could move controllers on screen when real BCR sends messages - for easyparm that could be possible, but not for sysex?
+
+Visual editing
+* Drag and drop arrangement of controllers?
+* Property window for controller? That's hard for the freeform tx stuff
+
