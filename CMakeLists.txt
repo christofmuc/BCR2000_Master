@@ -11,8 +11,11 @@ project(BCR2000_Master)
 # Include useful scripts for CMake    
 include(FetchContent REQUIRED)
 
+# To avoid dependency on WebKit. 
+option(JUCE_CONFIG_JUCE_WEB_BROWSER OFF) 
+
 # On Windows, we need to download external dependencies
-IF (WIN32)
+if (WIN32)
     FetchContent_Declare(
 	  boost
 	  URL "https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.zip"
@@ -26,7 +29,15 @@ IF (WIN32)
 	)
 	FetchContent_MakeAvailable(vcredist)
 	set(VCREDIST_PATH "${CMAKE_CURRENT_BINARY_DIR}/_deps/vcredist-subbuild/vcredist-populate-prefix/src")
-ENDIF()
+else()
+    # This else branch is Linux, then.
+	# Include useful scripts for CMake
+	find_package(PkgConfig REQUIRED) 
+
+	# These calls create special `PkgConfig::<MODULE>` variables
+	pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)	
+	pkg_check_modules(GLEW REQUIRED IMPORTED_TARGET glew)
+endif()
 
 # We need a little bit support for the JUCE library, and also want to put our own CMake helpers on the module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/third_party/juce-cmake/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -37,6 +48,5 @@ add_subdirectory(MidiKraft-base)
 add_subdirectory(MidiKraft-BCR2000)
 
 add_subdirectory(BCRMaster)
-
 
 
