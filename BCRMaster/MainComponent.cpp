@@ -11,20 +11,6 @@
 
 #include "HorizontalLayoutContainer.h"
 
-class LogViewLogger : public SimpleLogger {
-public:
-	LogViewLogger(LogView &logview) : logview_(logview) {}
-
-
-	virtual void postMessage(const String& message) override
-	{
-		logview_.addMessageToList(message);
-	}
-
-private:
-	LogView &logview_;
-};
-
 //==============================================================================
 MainComponent::MainComponent() : bcr_(std::make_shared<midikraft::BCR2000>()),
 	tabs_(TabbedButtonBar::Orientation::TabsAtTop),
