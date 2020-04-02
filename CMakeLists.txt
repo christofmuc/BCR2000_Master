@@ -36,6 +36,7 @@ else()
 
 	# These calls create special `PkgConfig::<MODULE>` variables
 	pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)	
+	pkg_check_modules(GLEW REQUIRED IMPORTED_TARGET glew)
 endif()
 
 # We need a little bit support for the JUCE library, and also want to put our own CMake helpers on the module path
