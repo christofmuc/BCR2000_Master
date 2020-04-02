@@ -1,4 +1,3 @@
-#include "..\juce-widgets\SimpleTable.h"
 #include "BCLEditor.h"
 
 #include "StreamLogger.h"
