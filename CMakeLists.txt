@@ -11,9 +11,6 @@ project(BCR2000_Master)
 # Include useful scripts for CMake    
 include(FetchContent REQUIRED)
 
-# To avoid dependency on WebKit. 
-option(JUCE_CONFIG_JUCE_WEB_BROWSER OFF) 
-
 # On Windows, we need to download external dependencies
 if (WIN32)
     FetchContent_Declare(
@@ -36,6 +33,7 @@ else()
 
 	# These calls create special `PkgConfig::<MODULE>` variables
 	pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)	
+	pkg_check_modules(WEBKIT REQUIRED IMPORTED_TARGET webkit2gtk-4.0)
 	pkg_check_modules(GLEW REQUIRED IMPORTED_TARGET glew)
 endif()
 

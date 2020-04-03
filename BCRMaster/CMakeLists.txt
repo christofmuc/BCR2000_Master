@@ -49,6 +49,7 @@ ELSEIF(UNIX)
 	target_link_libraries(BCRMaster PRIVATE 
 		${JUCE_LIBRARIES} 		
 		PkgConfig::GTK 
+		PkgConfig::WEBKIT
 		PkgConfig::GLEW
 		Xext 
 		X11 
