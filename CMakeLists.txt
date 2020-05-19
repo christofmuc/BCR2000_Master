@@ -6,7 +6,7 @@
 
 cmake_minimum_required(VERSION 3.14)
 
-project(BCR2000_Master VERSION 1.1.0)
+project(BCR2000_Master)
 
 # Include useful scripts for CMake    
 include(FetchContent REQUIRED)
@@ -37,7 +37,7 @@ else()
 	pkg_check_modules(GLEW REQUIRED IMPORTED_TARGET glew)
 endif()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/third_party/JUCE" "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/third_party/juce-cmake/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # New with Juce 6 - native CMake support. Let's find out how that works!
 add_subdirectory(third_party/JUCE)
@@ -48,5 +48,7 @@ add_subdirectory(MidiKraft-base)
 add_subdirectory(MidiKraft-BCR2000)
 
 add_subdirectory(BCRMaster)
+
+
 
 
