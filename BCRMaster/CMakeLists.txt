@@ -6,7 +6,7 @@
 
 cmake_minimum_required(VERSION 3.14)
 
-project(BCRMaster)
+project(BCRMaster VERSION 1.0.0)
 
 IF (WIN32)
 	# All setup for UI software on Windows
@@ -20,18 +20,6 @@ ELSEIF(UNIX)
 	pkg_check_modules(WEBKIT REQUIRED IMPORTED_TARGET webkit2gtk-4.0)
 ENDIF()
 
-find_package(JUCE REQUIRED 
-	COMPONENTS 
-		juce_core		
-		juce_events
-		juce_audio_basics
-		juce_audio_devices
-		juce_data_structures
-		juce_audio_utils # AudioAppComponent
-		juce_dsp
-		juce_opengl
-)
-
 set(SOURCES
 	MainComponent.h MainComponent.cpp	
 	BCLEditor.h BCLEditor.cpp	
@@ -41,13 +29,14 @@ set(SOURCES
 	../ideas.txt
 )
 
-add_executable(BCRMaster WIN32 ${SOURCES})
+juce_add_gui_app(BCRMaster)
+target_sources(BCRMaster PRIVATE ${SOURCES})
 target_include_directories(BCRMaster INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 IF(WIN32)
-	target_link_libraries(BCRMaster PRIVATE ${JUCE_LIBRARIES} juce-utils juce-widgets midikraft-base midikraft-behringer-bcr2000)
+	target_link_libraries(BCRMaster PRIVATE ${JUCE_MODULES_NEEDED} juce-utils juce-widgets midikraft-base midikraft-behringer-bcr2000)
 ELSEIF(UNIX)
 	target_link_libraries(BCRMaster PRIVATE 
-		${JUCE_LIBRARIES} 		
+		${JUCE_MODULES_NEEDED} 		
 		PkgConfig::GTK 
 		PkgConfig::WEBKIT
 		PkgConfig::GLEW
