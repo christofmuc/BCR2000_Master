@@ -47,7 +47,14 @@ set(JUCE_MODULES_NEEDED juce::juce_core juce::juce_data_structures juce::juce_au
 			juce::juce_events  juce::juce_audio_utils juce::juce_gui_basics juce::juce_gui_extra juce::juce_dsp juce::juce_opengl)
 juce_add_console_app(TOPLEVEL_JUCE PRODUCT_NAME "fake")
 target_sources(TOPLEVEL_JUCE PRIVATE main.cpp)
-target_link_libraries(TOPLEVEL_JUCE PRIVATE ${JUCE_MODULES_NEEDED})
+IF(WIN32)
+	target_link_libraries(TOPLEVEL_JUCE PRIVATE ${JUCE_MODULES_NEEDED})
+ELSEIF(UNIX)
+	target_link_libraries(TOPLEVEL_JUCE PRIVATE 
+		${JUCE_MODULES_NEEDED} PkgConfig::GTK PkgConfig::WEBKIT PkgConfig::GLEW Xext X11 pthread ${CMAKE_DL_LIBS} freetype curl asound)
+	target_compile_options(BCRMaster PRIVATE -pthread -I/usr/include/webkitgtk-4.0 -I/usr/include/gtk-3.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at-spi-2.0 -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/gtk-3.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng16 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng16 -I/usr/include/libsoup-2.4 -I/usr/include/libxml2 -I/usr/include/webkitgtk-4.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include)
+ENDIF()
+
 juce_generate_juce_header(TOPLEVEL_JUCE)
 set(JUCE_HEADER_GENERATED "${CMAKE_CURRENT_BINARY_DIR}/TOPLEVEL_JUCE_artefacts/JuceLibraryCode/JuceHeader.h")
 add_custom_target(GENERATE_JUCE_HEADER ALL DEPENDS ${JUCE_HEADER_GENERATED})
