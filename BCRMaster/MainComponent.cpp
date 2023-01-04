@@ -149,7 +149,7 @@ void MainComponent::detectBCR()
 	MouseCursor::showWaitCursor();
 	std::vector<std::shared_ptr<midikraft::SimpleDiscoverableDevice>> devices;
 	devices.push_back(bcr_);
-	autodetector_.autoconfigure(devices, nullptr);
+	autodetector_.autoconfigure(devices);
 	refreshFromBCR();
 }
 
