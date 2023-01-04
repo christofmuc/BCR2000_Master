@@ -11,7 +11,7 @@ environment:
   - {}
 build_script:
 - cmd: |
-    cmake -S . -B builds -G "Visual Studio 15 2017 Win64" 
+    cmake -S . -B builds -G "Visual Studio 15 2017 Win64" -DCMAKE_SYSTEM_VERSION=10.0.19041.0
     cmake --build builds --config Debug
     cmake --build builds --config Release
 - sh: >-
