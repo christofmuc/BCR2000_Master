@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "BCRMaster"
-#define MyAppVersion "1.0.3"
+#define MyAppVersion "1.0.4"
 #define MyAppPublisher "Christof Ruch Beratungs UG (haftungsbeschraenkt)"
 #define MyAppURL "https://github.com/christofmuc/BCR2000_Master/"
 #define MyAppExeName "BCRMaster.exe"

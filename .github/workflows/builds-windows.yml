@@ -40,7 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: builds/BCRMaster/Release/BCRMaster.exe
-          #tags: true
+          file: builds/BCRMaster/bcrmaster_setup.exe
+          tags: true
           draft: true
 
