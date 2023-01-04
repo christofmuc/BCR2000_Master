@@ -35,3 +35,12 @@ jobs:
           cmake --build builds --config Debug
           cmake --build builds --config Release
 
+      - name: Publish release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: builds/BCRMaster/Release/BCRMaster.exe
+          #tags: true
+          draft: true
+
