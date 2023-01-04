@@ -27,9 +27,8 @@ jobs:
 
       - name: CMake configure
         shell: bash
-        # -DCMAKE_SYSTEM_VERSION=10.0.19041.0
         run: |
-          cmake -S . -B builds -G "Visual Studio 15 2017 Win64"  
+          cmake -S . -B builds -G "Visual Studio 16 2019" -A x64 -T v141 -DCMAKE_SYSTEM_VERSION=10.0.19041.0
 
       - name: CMake build
         run: |
