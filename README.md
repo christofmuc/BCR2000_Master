@@ -1,7 +1,5 @@
 # Introduction
 
-[![Build status](https://ci.appveyor.com/api/projects/status/4c30cggyicb1431j/branch/master?svg=true)](https://ci.appveyor.com/project/christofmuc/bcr2000-master/branch/master)
-
 This is a little free software tool that allows you to program the Behringer BCR2000 MIDI controller in its native programming language called BCL.
 
 Basically, the software provides the following features:
