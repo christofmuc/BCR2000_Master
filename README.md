@@ -27,9 +27,13 @@ Tested currently only on Windows 10, but all technology used is cross platform a
 
 ## Prerequisites
 
-We use [CMake 3.14](https://cmake.org/) and Visual Studio 2017 for C++. Make sure to have both of these installed. Newer Visual Studios might work as well, you can select them as generators in CMake. 
+We use [CMake 3.14](https://cmake.org/) and Visual Studio 2017 for C++. Make sure to have both of these installed. Newer Visual Studios might work as well, you can select them as generators in CMake. For the exact sequence to build the software, checkout the github action files in the .github/workflows directory.
 
 ## Downloading
+
+I provide a pre-built Windows binary in the release section of this github page.
+
+## Building
 
 Clone with submodules from github
 
@@ -45,9 +49,11 @@ The recursive clone with  submodules is required to retrieve the following addit
 
 Using CMake and building is a simple step if the prerequisites are fulfilled. Simply open a command line in the downloaded root directory `<PyTschirpDir>` and run
 
-    cmake -S . -B builds -G "Visual Studio 15 2017 Win64"
+    cmake -S . -B builds -G "Visual Studio 16 2019" -A x64 -T v141 -DCMAKE_SYSTEM_VERSION=10.0.19041.0
 
-This will generate a solution file for Visual Studio in the builds subdirectory. You can build the software to run it immediately with the command
+This will generate a solution file for Visual Studio in the builds subdirectory. Sorry for the very picky version setup, but github as of 2023 has no VS2017 anymore, so we need to use 2019 and target the v14.1 toolset, which is VS 2017. The old JUCE library we still use here doesn't compile with newer compilers, and in addition Microsoft broke their newer SDKs with the old compiler, therefore we need to specify the exact Windows SDK version as well. Sigh.
+
+You can build the software to run it immediately with the command
 
     cmake --build builds --config Release
 
